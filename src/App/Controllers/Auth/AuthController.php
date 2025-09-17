@@ -89,14 +89,35 @@ class AuthController
      */
     public function logout()
     {
-        header('Content-Type: application/json');
+        // Support both API (POST -> JSON) and Web (GET -> confirm/redirect) flows
+        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
-        $result = $this->authService->logout();
+        if ($method === 'POST') {
+            header('Content-Type: application/json');
+            $result = $this->authService->logout();
+            echo json_encode([
+                'status' => 'success',
+                'message' => $result['message']
+            ]);
+            return;
+        }
 
-        echo json_encode([
-            'status' => 'success',
-            'message' => $result['message']
-        ]);
+        // GET flow: show confirmation first, then redirect after confirm=true
+        if (isset($_GET['confirm']) && $_GET['confirm'] === 'true') {
+            $this->authService->logout();
+            $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+            $basePath = dirname($scriptName);
+            header('Location: ' . $basePath . '/login');
+            return;
+        }
+
+        $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+        $basePath = dirname($scriptName);
+        $data = [
+            'logoutUrl' => $basePath . '/logout?confirm=true',
+            'cancelUrl' => $basePath . '/login'
+        ];
+        $this->view->display('auth.logout-confirmation', $data);
     }
 
     /**
