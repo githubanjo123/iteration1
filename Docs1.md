@@ -1,3 +1,109 @@
+TDD Development Diary – PHP Web Application
+
+Development Sessions
+
+Session 1: Modern Typography, Tailwind CDN, Coastal Blues Theme
+Driver: Developer A
+Navigator: Developer B
+
+Tests (Red):
+Legacy Bootstrap-based styles lacked a cohesive modern theme and readable typography. Users reported small text sizes and inconsistent colors.
+
+Implementation (Green):
+Integrated Tailwind CSS CDN, extended a coastal blues palette under `primary`, and standardized greys. Increased base font sizing via Tailwind utility usage across `auth/login.php`, `admin/dashboard.php`, and confirmation views. Adopted system modern sans font stack.
+
+Refactoring (Blue):
+Replaced ad-hoc inline CSS with Tailwind utilities; removed Bootstrap dependency from updated pages to reduce bloat and unify styles.
+
+Roles switch
+
+Benefits: A consistent, modern look with improved readability and faster iteration using utility classes.
+
+Session 2: Sticky Navigation aligned with Header
+Driver: Developer A
+Navigator: Developer B
+
+Tests (Red):
+Admin tabs scrolled out of view, reducing accessibility for frequent actions.
+
+Implementation (Green):
+Created a sticky, blurred gradient header containing aligned tabs (Manage Users, Manage Subjects, Subject Assignments, Reports). Tabs remain visible on scroll.
+
+Refactoring (Blue):
+Consolidated duplicated tab styles, ensured active state is persisted in `localStorage`.
+
+Roles switch
+
+Benefits: Faster navigation and constant access to core admin sections.
+
+Session 3: Authentication UX – Password Visibility Toggle
+Driver: Developer A
+Navigator: Developer B
+
+Tests (Red):
+Users struggled with mistyped passwords on the login page.
+
+Implementation (Green):
+Added an eye icon toggle to switch password field between text/password on `auth/login.php` using Tailwind and Font Awesome.
+
+Refactoring (Blue):
+Removed Bootstrap from login, applied coastal theme with glassmorphism card.
+
+Roles switch
+
+Benefits: Fewer login errors; clearer, modern login UI.
+
+Session 4: Logout Flow – Modal Confirmation with Background Blur
+Driver: Developer A
+Navigator: Developer B
+
+Tests (Red):
+Separate logout page disrupted flow and added navigation overhead.
+
+Implementation (Green):
+Added a confirmation modal to `admin/dashboard.php` with backdrop blur and consistent buttons; wired primary Logout button to `?confirm=true` as fallback.
+
+Refactoring (Blue):
+Updated `admin/logout-confirmation.php` to Tailwind for consistency (kept for direct route fallback).
+
+Roles switch
+
+Benefits: Smoother, in-context confirmation with improved focus.
+
+Session 5: Manage Users – Students/Faculty Sub-tabs
+Driver: Developer A
+Navigator: Developer B
+
+Tests (Red):
+Faculty list mixed with student sections caused visual clutter.
+
+Implementation (Green):
+Introduced sub-tabs for Students and Faculty in `admin/manage-users.php`; moved faculty area into its own sub-tab.
+
+Refactoring (Blue):
+Light restructuring and defaulting to Students tab on load.
+
+Roles switch
+
+Benefits: Clearer information architecture and faster task focus.
+
+Session 6: Student Management – Edit Auto-populate and Improved Modals
+Driver: Developer A
+Navigator: Developer B
+
+Tests (Red):
+Editing required retyping existing data; delete used browser confirm dialogs; add form had an X icon that conflicted with the new modal guidelines.
+
+Implementation (Green):
+Auto-populated Edit Student form using an in-memory map of `$students`. Replaced delete confirm with a centered modal card with only Delete and Cancel buttons and backdrop blur. Removed X button from Add Student and added a prominent red Cancel button.
+
+Refactoring (Blue):
+Standardized modal backdrops with `bg-black/50 backdrop-blur-sm` and unified button styles.
+
+Roles switch
+
+Benefits: Faster edits, safer deletes, consistent modal UX aligned with the design system.
+
 TDD Development Diary - PHP Web Application
 Development Sessions
 Session 1: Project Foundation
