@@ -12,16 +12,16 @@
                 extend: {
                     colors: {
                         primary: {
-                            50: '#fef2f2',
-                            100: '#fee2e2',
-                            200: '#fecaca',
-                            300: '#fca5a5',
-                            400: '#f87171',
-                            500: '#ef4444',
-                            600: '#dc2626',
-                            700: '#b91c1c',
-                            800: '#991b1b',
-                            900: '#7f1d1d',
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
                         },
                         grey: {
                             50: '#f9fafb',
@@ -81,25 +81,44 @@
         }
     </script>
 </head>
-<body class="bg-grey-50">
-    <!-- Header Section -->
-    <div class="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-6 mb-8">
+<body class="bg-grey-50 text-[17px]">
+    <!-- Sticky Header Section -->
+    <div class="sticky top-0 z-40 backdrop-blur bg-gradient-to-r from-primary-600/95 to-primary-800/95 text-white">
         <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center py-4">
                 <div>
-                    <h1 class="text-3xl font-bold mb-1">
+                    <h1 class="text-3xl font-bold leading-tight">
                         <i class="fas fa-tachometer-alt mr-2"></i>
                         Admin Dashboard
                     </h1>
-                    <p class="text-lg opacity-90">
-                        Welcome back, <?= htmlspecialchars($admin['full_name'] ?? 'Admin') ?>
-                    </p>
+                    <p class="text-base opacity-90">Welcome Admin</p>
                 </div>
                 <div>
-                    <a href="<?= dirname($_SERVER['SCRIPT_NAME']) ?>/admin/logout" class="bg-transparent border-2 border-white text-white px-6 py-2 rounded-full hover:bg-white hover:text-primary-600 transition-all duration-300">
+                    <button type="button" onclick="openLogoutModal()" class="bg-white/10 border border-white/30 text-white px-6 py-2 rounded-full hover:bg-white hover:text-primary-700 transition-all duration-300">
                         <i class="fas fa-sign-out-alt mr-2"></i>
                         Logout
-                    </a>
+                    </button>
+                </div>
+            </div>
+            <!-- Aligned Sticky Navigation Tabs -->
+            <div class="border-b border-white/20">
+                <div class="flex space-x-1">
+                    <button class="bg-white text-primary-700 font-semibold px-6 py-3 rounded-t-lg border-b-2 border-primary-600 hover:bg-grey-50 transition-all duration-300" id="users-tab" onclick="showTab('users')">
+                        <i class="fas fa-users mr-2"></i>
+                        Manage Users
+                    </button>
+                    <button class="text-white/90 font-semibold px-6 py-3 rounded-t-lg hover:bg-white/10 transition-all duration-300" id="subjects-tab" onclick="showTab('subjects')">
+                        <i class="fas fa-book mr-2"></i>
+                        Manage Subjects
+                    </button>
+                    <button class="text-white/90 font-semibold px-6 py-3 rounded-t-lg hover:bg-white/10 transition-all duration-300" id="assignments-tab" onclick="showTab('assignments')">
+                        <i class="fas fa-link mr-2"></i>
+                        Subject Assignments
+                    </button>
+                    <button class="text-white/90 font-semibold px-6 py-3 rounded-t-lg hover:bg-white/10 transition-all duration-300" id="reports-tab" onclick="showTab('reports')">
+                        <i class="fas fa-chart-bar mr-2"></i>
+                        Reports
+                    </button>
                 </div>
             </div>
         </div>
@@ -134,30 +153,8 @@
             <?php unset($_SESSION['error_message']); ?>
         <?php endif; ?>
 
-        <!-- Tab Navigation -->
-        <div class="border-b-2 border-grey-200 mb-0">
-            <div class="flex space-x-1">
-                <button class="bg-white text-primary-600 font-semibold px-6 py-4 rounded-t-lg border-b-2 border-primary-600 hover:bg-grey-50 transition-all duration-300" id="users-tab" onclick="showTab('users')">
-                    <i class="fas fa-users mr-2"></i>
-                    Manage Users
-                </button>
-                <button class="text-grey-600 font-semibold px-6 py-4 rounded-t-lg hover:bg-white hover:text-primary-600 transition-all duration-300" id="subjects-tab" onclick="showTab('subjects')">
-                    <i class="fas fa-book mr-2"></i>
-                    Manage Subjects
-                </button>
-                <button class="text-grey-600 font-semibold px-6 py-4 rounded-t-lg hover:bg-white hover:text-primary-600 transition-all duration-300" id="assignments-tab" onclick="showTab('assignments')">
-                    <i class="fas fa-link mr-2"></i>
-                    Subject Assignments
-                </button>
-                <button class="text-grey-600 font-semibold px-6 py-4 rounded-t-lg hover:bg-white hover:text-primary-600 transition-all duration-300" id="reports-tab" onclick="showTab('reports')">
-                    <i class="fas fa-chart-bar mr-2"></i>
-                    Reports
-                </button>
-            </div>
-        </div>
-
         <!-- Tab Content -->
-        <div class="bg-white rounded-b-lg p-8 shadow-lg">
+        <div class="bg-white rounded-lg p-8 shadow-lg -mt-4">
             <!-- Tab 1: Manage Users -->
             <div id="users" class="tab-content active">
                 <?php include 'manage-users.php'; ?>
@@ -179,6 +176,25 @@
                     <i class="fas fa-chart-bar text-6xl text-grey-400 mb-4"></i>
                     <h4 class="text-xl font-semibold text-grey-700 mb-2">Reports & Analytics</h4>
                     <p class="text-grey-500">Reporting functionality coming soon...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div id="logoutModal" class="fixed inset-0 hidden z-50">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeLogoutModal()"></div>
+        <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
+                <div class="px-6 py-4 border-b border-grey-200">
+                    <h3 class="text-lg font-semibold text-grey-800">Confirm Logout</h3>
+                </div>
+                <div class="p-6">
+                    <p class="text-grey-700 mb-6">Are you sure you want to logout from the admin panel?</p>
+                    <div class="flex justify-end space-x-3">
+                        <button class="px-5 py-2 rounded-lg bg-grey-100 text-grey-700 hover:bg-grey-200" onclick="closeLogoutModal()">Cancel</button>
+                        <a href="<?= dirname($_SERVER['SCRIPT_NAME']) ?>/admin/logout?confirm=true" class="px-5 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700">Logout</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -246,6 +262,13 @@
                 showTab(savedTab);
             }
         });
+
+        function openLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('hidden');
+        }
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').classList.add('hidden');
+        }
     </script>
 </body>
 </html>

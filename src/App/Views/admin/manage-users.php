@@ -21,8 +21,43 @@
     </div>
 </div>
 
+<!-- Users Sub-tabs -->
+<div class="mb-6">
+    <div class="flex space-x-2">
+        <button id="students-subtab-btn" class="px-4 py-2 rounded-lg bg-primary-600 text-white font-semibold" onclick="showUsersSubtab('students')">
+            <i class="fas fa-user-graduate mr-2"></i>Students
+        </button>
+        <button id="faculty-subtab-btn" class="px-4 py-2 rounded-lg bg-white text-grey-700 border border-grey-300 hover:bg-grey-50" onclick="showUsersSubtab('faculty')">
+            <i class="fas fa-chalkboard-teacher mr-2"></i>Faculty
+        </button>
+    </div>
+    <script>
+    function showUsersSubtab(which) {
+        var studentsBtn = document.getElementById('students-subtab-btn');
+        var facultyBtn = document.getElementById('faculty-subtab-btn');
+        var studentsTab = document.getElementById('students-subtab');
+        var facultyTab = document.getElementById('faculty-subtab');
+        if (which === 'students') {
+            studentsTab.classList.remove('hidden');
+            facultyTab.classList.add('hidden');
+            studentsBtn.classList.add('bg-primary-600','text-white');
+            studentsBtn.classList.remove('bg-white','text-grey-700','border','border-grey-300');
+            facultyBtn.classList.remove('bg-primary-600','text-white');
+            facultyBtn.classList.add('bg-white','text-grey-700','border','border-grey-300');
+        } else {
+            facultyTab.classList.remove('hidden');
+            studentsTab.classList.add('hidden');
+            facultyBtn.classList.add('bg-primary-600','text-white');
+            facultyBtn.classList.remove('bg-white','text-grey-700','border','border-grey-300');
+            studentsBtn.classList.remove('bg-primary-600','text-white');
+            studentsBtn.classList.add('bg-white','text-grey-700','border','border-grey-300');
+        }
+    }
+    </script>
+</div>
+
 <!-- Students Section - Organized by Year & Section -->
-<div class="mb-8">
+<div id="students-subtab" class="mb-8">
     <h5 class="text-lg font-semibold text-grey-800 mb-4">
         <i class="fas fa-graduation-cap mr-2 text-primary-600"></i>
         Students by Year & Section
@@ -111,7 +146,7 @@
 </div>
 
 <!-- Faculty Section -->
-<div class="mt-12">
+<div id="faculty-subtab" class="mt-12 hidden">
     <h5 class="text-lg font-semibold text-grey-800 mb-4">
         <i class="fas fa-chalkboard-teacher mr-2 text-primary-600"></i>
         Faculty Members
@@ -165,12 +200,23 @@
 </div>
 
 <script>
-// Edit Student Function
+// Build student map for quick lookup and Edit auto-populate
+const studentsData = <?= json_encode($students ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+const studentIdToStudent = Object.fromEntries((studentsData || []).map(function(s){ return [String(s.user_id), s]; }));
+
+// Edit Student Function with auto-populate
 function editStudent(studentId) {
-    // TODO: Fetch student data and populate form
-    console.log('Edit student:', studentId);
-    // For now, show a simple form
-    showEditStudentModal(studentId);
+    var student = studentIdToStudent[String(studentId)];
+    if (student) {
+        document.getElementById('editStudentId').value = student.user_id;
+        document.getElementById('edit_school_id').value = student.school_id || '';
+        document.getElementById('edit_full_name').value = student.full_name || '';
+        document.getElementById('edit_year_level').value = student.year_level || '';
+        document.getElementById('edit_section').value = student.section || '';
+    } else {
+        document.getElementById('editStudentId').value = studentId;
+    }
+    document.getElementById('editStudentModal').classList.remove('hidden');
 }
 
 // Show Edit Student Modal
@@ -179,23 +225,28 @@ function showEditStudentModal(studentId) {
     document.getElementById('editStudentId').value = studentId;
 }
 
-// Delete Student Function
+// Delete Student Confirmation Modal flow
+let pendingDeleteStudentId = null;
 function deleteStudent(studentId) {
-    if (confirm('Are you sure you want to delete this student?')) {
-        // Create and submit delete form
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '<?= dirname($_SERVER['SCRIPT_NAME']) ?>/admin/users/delete-student';
-        
-        const userIdInput = document.createElement('input');
-        userIdInput.type = 'hidden';
-        userIdInput.name = 'user_id';
-        userIdInput.value = studentId;
-        
-        form.appendChild(userIdInput);
-        document.body.appendChild(form);
-        form.submit();
-    }
+    pendingDeleteStudentId = studentId;
+    document.getElementById('deleteStudentModal').classList.remove('hidden');
+}
+function cancelDeleteStudent() {
+    pendingDeleteStudentId = null;
+    document.getElementById('deleteStudentModal').classList.add('hidden');
+}
+function confirmDeleteStudent() {
+    if (!pendingDeleteStudentId) return;
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '<?= dirname($_SERVER['SCRIPT_NAME']) ?>/admin/users/delete-student';
+    const userIdInput = document.createElement('input');
+    userIdInput.type = 'hidden';
+    userIdInput.name = 'user_id';
+    userIdInput.value = pendingDeleteStudentId;
+    form.appendChild(userIdInput);
+    document.body.appendChild(form);
+    form.submit();
 }
 
 // Edit Faculty Function
@@ -287,7 +338,7 @@ document.addEventListener('DOMContentLoaded', function() {
  </script>
 
 <!-- Edit Student Modal -->
-<div id="editStudentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+<div id="editStudentModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
     <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4">
         <!-- Modal Header -->
         <div class="flex justify-between items-center p-6 border-b border-grey-200">
@@ -391,8 +442,32 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<!-- Delete Student Confirmation Modal -->
+<div id="deleteStudentModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
+            <div class="px-6 py-4 border-b border-grey-200">
+                <h3 class="text-lg font-semibold text-grey-800">Confirm Delete</h3>
+            </div>
+            <div class="p-6">
+                <p class="text-grey-700 mb-6">Are you sure you want to delete this student?</p>
+                <div class="flex justify-end space-x-3">
+                    <button class="px-5 py-2 rounded-lg bg-grey-100 text-grey-700 hover:bg-grey-200" onclick="cancelDeleteStudent()">Cancel</button>
+                    <button class="px-5 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700" onclick="confirmDeleteStudent()">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    (function(){
+        var modal = document.getElementById('deleteStudentModal');
+        modal.addEventListener('click', function(e){ if (e.target === modal) cancelDeleteStudent(); });
+    })();
+    </script>
+</div>
+
 <!-- Add Student Modal -->
-<div id="addStudentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+<div id="addStudentModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
     <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4">
         <!-- Modal Header -->
         <div class="flex justify-between items-center p-6 border-b border-grey-200">
@@ -400,9 +475,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 <i class="fas fa-user-plus mr-2 text-primary-600"></i>
                 Add New Student
             </h3>
-            <button onclick="closeModal('addStudentModal')" class="text-grey-400 hover:text-grey-600 transition-colors">
-                <i class="fas fa-times text-xl"></i>
-            </button>
         </div>
 
         <!-- Modal Body -->
@@ -461,8 +533,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <!-- Modal Footer -->
         <div class="flex justify-end space-x-3 p-6 border-t border-grey-200">
             <button onclick="closeModal('addStudentModal')" 
-                    class="px-4 py-2 text-grey-600 bg-grey-100 hover:bg-grey-200 rounded-lg transition-colors">
-                <i class="fas fa-times mr-2"></i>
+                    class="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors">
                 Cancel
             </button>
             <button onclick="submitForm()" 
