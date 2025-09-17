@@ -42,6 +42,11 @@ $router->post('/api/auth/logout', function() use ($authController) {
     $authController->logout();
 });
 
+// Web logout with confirmation
+$router->get('/logout', function() use ($authController) {
+    $authController->logout();
+});
+
 // Admin Dashboard Routes
 $router->get('/admin/dashboard', function() {
     (new AdminController())->dashboard();
