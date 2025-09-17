@@ -20,12 +20,12 @@
                         Welcome, <?= htmlspecialchars($faculty['full_name'] ?? 'Faculty') ?>
                     </p>
                 </div>
-                <div>
-                    <a href="<?= dirname($_SERVER['SCRIPT_NAME']) ?>/faculty/logout" class="bg-transparent border-2 border-white text-white px-6 py-2 rounded-full hover:bg-white hover:text-blue-700 transition-all duration-300">
-                        <i class="fas fa-sign-out-alt mr-2"></i>
-                        Logout
-                    </a>
-                </div>
+				<div>
+					<button type="button" onclick="openLogoutModal()" class="bg-transparent border-2 border-white text-white px-6 py-2 rounded-full hover:bg-white hover:text-blue-700 transition-all duration-300">
+						<i class="fas fa-sign-out-alt mr-2"></i>
+						Logout
+					</button>
+				</div>
             </div>
         </div>
     </div>
@@ -55,5 +55,33 @@
             </div>
         </div>
     </div>
-</body>
+	<!-- Logout Confirmation Modal -->
+	<div id="logoutModal" class="fixed inset-0 hidden z-50">
+		<div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeLogoutModal()"></div>
+		<div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+			<div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
+				<div class="px-6 py-4 border-b border-gray-200">
+					<h3 class="text-lg font-semibold text-gray-800">Confirm Logout</h3>
+				</div>
+				<div class="p-6">
+					<p class="text-gray-700 mb-6">Are you sure you want to logout from the faculty dashboard?</p>
+					<div class="flex justify-end space-x-3">
+						<button class="px-5 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200" onclick="closeLogoutModal()">Cancel</button>
+						<a href="<?= dirname($_SERVER['SCRIPT_NAME']) ?>/faculty/logout?confirm=true" class="px-5 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700">Logout</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		function openLogoutModal() {
+			document.getElementById('logoutModal').classList.remove('hidden');
+		}
+		function closeLogoutModal() {
+			document.getElementById('logoutModal').classList.add('hidden');
+		}
+	</script>
+
+	</body>
 </html>
